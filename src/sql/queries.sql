@@ -21,6 +21,9 @@ SELECT * FROM climate;
 SELECT * FROM observations;
 
 
+-- Mission 1: We want to understand the biodiversity of each region. 
+-- Which regions have the most recorded species?
+
 SELECT regions.name, regions.country , COUNT(DISTINCT species_id) AS total_species
 FROM observations
 JOIN regions ON regions.id = observations.region_id
@@ -29,12 +32,15 @@ GROUP BY regions.name, regions.country
 ORDER BY total_species DESC;
 
 
+-- Mission 2: Which months have the highest observation activity? 
+-- Group by month based on actual observation dates. This is useful for detecting seasonality.
+
 SELECT strftime ('%m', observation_date) AS MONTH, COUNT(*) AS Total
 FROM observations
 GROUP BY month
 ORDER BY total DESC;
 
-
+-- Mission 3: Detect species with few recorded individuals (possible rare cases).
 
 SELECT scientific_name, common_name, SUM(count) AS total
 FROM species
@@ -44,6 +50,7 @@ HAVING Total < 5
 ORDER BY total ASC;
 
 
+-- Mission 4: Which region has the highest number of distinct species observed?
 
 SELECT name, country, COUNT(DISTINCT species_id) AS total
 FROM observations
@@ -53,6 +60,7 @@ ORDER BY total DESC
 LIMIT 1;
 
 
+-- Mission 5: Which species have been observed most frequently?
 
 SELECT scientific_name , common_name, COUNT(*) AS total
 FROM observations
@@ -62,6 +70,8 @@ ORDER BY total DESC
 LIMIT 10;
 
 
+-- Mission 6: We want to identify the most active observers. 
+-- Who are the people with the most observation records?
 
 SELECT observer, COUNT(*) AS total
 FROM observations
@@ -71,6 +81,8 @@ LIMIT 5;
 
 
 
+-- Mission 7: Which species have never been observed? 
+-- Check if there are species in the species table that do not appear in observations
 
 SELECT scientific_name, common_name
 FROM species
@@ -78,7 +90,8 @@ LEFT JOIN observations ON species.id = observations.species_id
 WHERE species_id IS NULL;
 
 
-
+-- Mission 8: On which dates were the most distinct species observed? 
+-- This information is ideal for exploring maximum biodiversity on specific days.
 
 SELECT observation_date, COUNT(DISTINCT species_id) AS total
 FROM observations
